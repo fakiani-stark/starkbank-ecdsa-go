@@ -32,9 +32,12 @@ func (self CurveFp) Contains(p Point) bool {
 	// 
 	// Verify if the point 'p' is on the curve
 	// 
-	// param p: p := Point{x,y}
-	// return: boolean
-	//
+	// Args:
+	// p: Point{x,y}
+	// 
+	// Returns:
+	// boolean value whether or not the point belongs to the curve
+	// 
 	u := new(big.Int)
 	v := u.Exp(p.Y, big.NewInt(2), nil)
 	w := u.Exp(p.X, big.NewInt(3), nil)

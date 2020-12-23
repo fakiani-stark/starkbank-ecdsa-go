@@ -6,7 +6,7 @@ import (
 )
 
 type Filer interface {
-	Read(path string)
+	Read(path string) []byte
 }
 
 type File struct {}

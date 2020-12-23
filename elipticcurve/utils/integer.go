@@ -6,7 +6,7 @@ import (
 )
 
 type RandomInteger interface {
-	Between(min *big.Int, max *big.Int)
+	Between(min *big.Int, max *big.Int) *big.Int
 }
 
 type Random struct {}

@@ -18,7 +18,7 @@ func TestSecp256k1(t *testing.T) {
 		t.Error("Point should not be in the curve")
 	}
 
-	if curve.Length() != 39{
+	if curve.Length() != 39 {
 		t.Error("Wrong curve")
 	}
 }
@@ -31,7 +31,7 @@ func TestPrime256v1(t *testing.T) {
 
 	curve := elipticcurve.Prime256v1()
 
-	if curve.Length() != 39{
+	if curve.Length() != 39 {
 		t.Error("Wrong curve")
 	}
 

@@ -15,58 +15,66 @@ func convert(val string, base, toBase int) (string, error) {
 	return strconv.FormatInt(base64, toBase), nil
 }
 
+// 
+// Return the hexadecimal representation of the binary data. Every byte of data is converted into the
+// corresponding 2-digit hex representation. The resulting string is therefore twice as long as the length of data.
+// 
+// Params: 
+// 
+// - `data`: binary string
+// 
+// Returns:
+// 
+// - Hexadecimal string
+//
 func HexFromBinary(data string) string {
-	// 
-	// Return the hexadecimal representation of the binary data. Every byte of data is converted into the
-	// corresponding 2-digit hex representation. The resulting string is therefore twice as long as the length of data.
-	// 
-	// Args: 
-	// data: binary string
-	// 
-	// Returns:
-	// Hexadecimal string
-	//
+
 	ans,_ := convert(data, 2, 16)
 	return ans
 }
 
+// 
+// Return the binary data represented by the hexadecimal string hexstr.
+// 
+// Params: 
+// - `data`: hexadecimal string
+// 
+// Returns:
+// 
+// - Binary string
+//
 func BinaryFromHex(data string) string {
-	// 
-	// Return the binary data represented by the hexadecimal string hexstr.
-	// 
-	// Args: 
-	// data: hexadecimal string
-	// 
-	// Returns:
-	// Binary string
-	//
 	ans,_ := convert(data, 16, 2)
 	return ans
 }
 
+// 
+// Get a number representation of a string
+// 
+// Params:
+// 
+// - `data`: string to be converted into a number
+// 
+// Returns:
+// 
+// - Number in hexadecimal base
+//
 func NumberFromString(data string) *big.Int {
-	// 
-	// Get a number representation of a string
-	// 
-	// Args:
-	// data: string to be converted into a number
-	// 
-	// Returns:
-	// Number in hexadecimal base
-	//
+
 	ans,_ := new(big.Int).SetString(hex.EncodeToString([]byte(data)), 16)
 	return ans
 }
 
+// 
+// Get a string representation of a number
+// 
+// Params: 
+// - `number`: number to be converted into a string
+// 
+// Returns:
+// 
+// - Hexadecimal string
+//
 func StringFromNumber(number *big.Int) string {
-	// 
-	// Get a string representation of a number
-	// 
-	// Args: 
-	// number: number to be converted into a string
-	// 
-	// Returns:
-	// Hexadecimal string
-	//
 	return number.String()
 }

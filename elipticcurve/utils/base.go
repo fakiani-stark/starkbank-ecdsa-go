@@ -5,8 +5,8 @@ import (
 )
 
 type Base64er interface {
-	Decode(str string)
-	Encode(str string)
+	Decode(str string) string
+	Encode(str string) string
 }
 
 type Base64 struct {}

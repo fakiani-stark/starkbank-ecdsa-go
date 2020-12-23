@@ -12,8 +12,8 @@ import (
 
 type CurveFper interface {
 	
-	Contains(p Point)
-	Length()
+	Contains(p Point) bool
+	Length() int
 }
 
 type CurveFp struct {
@@ -28,16 +28,18 @@ type CurveFp struct {
 	Oid []int64
 }
 
+// 
+// Verify if the point 'p' is on the curve
+// 
+// Params:
+// 
+// - `p`: Point{x,y}
+// 
+// Returns:
+// 
+// - boolean value whether or not the point belongs to the curve
+// 
 func (self CurveFp) Contains(p Point) bool {
-	// 
-	// Verify if the point 'p' is on the curve
-	// 
-	// Args:
-	// p: Point{x,y}
-	// 
-	// Returns:
-	// boolean value whether or not the point belongs to the curve
-	// 
 	u := new(big.Int)
 	v := u.Exp(p.Y, big.NewInt(2), nil)
 	w := u.Exp(p.X, big.NewInt(3), nil)

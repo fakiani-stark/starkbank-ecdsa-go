@@ -3,7 +3,7 @@ package tests
 import (
 	"testing"
 	"math/big"
-	"../elipticcurve/utils"
+	"../ellipticcurve/utils"
 )
 
 func TestIntegerBetween(t *testing.T) {

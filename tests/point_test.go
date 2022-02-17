@@ -3,11 +3,11 @@ package tests
 import (
 	"testing"
 	"math/big"
-	"../elipticcurve"
+	"../ellipticcurve"
 )
 
 func TestPoint(t *testing.T) {
-	point := elipticcurve.Point{
+	point := ellipticcurve.Point{
 		X: big.NewInt(12),
 		Y: big.NewInt(43),
 		Z: big.NewInt(432)}

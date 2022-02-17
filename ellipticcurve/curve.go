@@ -4,7 +4,7 @@
 // y^2 = x^3 + A*x + B (mod P)
 //
 
-package elipticcurve
+package ellipticcurve
 
 import (
 	"math/big"

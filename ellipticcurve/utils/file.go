@@ -13,9 +13,9 @@ type File struct {}
 
 func (self File) Read(path string) []byte {
     content, err := ioutil.ReadFile(path)
-     if err != nil {
-          log.Fatal(err)
-     }
+    if err != nil {
+    	log.Fatal(err)
+    }
 
 	return content
 }

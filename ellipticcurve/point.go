@@ -1,4 +1,4 @@
-package elipticcurve
+package ellipticcurve
 
 import (
 	"math/big"

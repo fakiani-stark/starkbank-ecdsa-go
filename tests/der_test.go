@@ -2,7 +2,7 @@ package tests
 
 import (
 	"testing"
-	. "../elipticcurve/utils"
+	"../ellipticcurve/utils"
 )
 
 func TestEncodeSequence(t *testing.T) {

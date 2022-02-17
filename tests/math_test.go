@@ -3,7 +3,7 @@ package tests
 import (
 	"testing"
 	"math/big"
-	. "../elipticcurve"
+	"../ellipticcurve"
 )
 
 func TestMultiplyAndAdd(t *testing.T) {

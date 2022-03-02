@@ -1,11 +1,11 @@
 package utils
 
 import (
-	"strconv"
-	"encoding/hex"
-	"math/big"
-	"fmt"
 	b64 "encoding/base64"
+	"encoding/hex"
+	"fmt"
+	"math/big"
+	"strconv"
 	// "reflect"
 )
 
@@ -18,16 +18,16 @@ import (
 // 	return strconv.FormatInt(base64, toBase), nil
 // }
 
-// // 
+// //
 // // Return the hexadecimal representation of the binary data. Every byte of data is converted into the
 // // corresponding 2-digit hex representation. The resulting string is therefore twice as long as the length of data.
-// // 
-// // Params: 
-// // 
+// //
+// // Params:
+// //
 // // - `data`: binary string
-// // 
+// //
 // // Returns:
-// // 
+// //
 // // - Hexadecimal string
 // //
 // func HexFromBinary(data string) string {
@@ -36,14 +36,14 @@ import (
 // 	return ans
 // }
 
-// // 
+// //
 // // Return the binary data represented by the hexadecimal string hexstr.
-// // 
-// // Params: 
+// //
+// // Params:
 // // - `data`: hexadecimal string
-// // 
+// //
 // // Returns:
-// // 
+// //
 // // - Binary string
 // //
 // func BinaryFromHex(data string) string {
@@ -51,15 +51,15 @@ import (
 // 	return ans
 // }
 
-// // 
+// //
 // // Get a number representation of a string
-// // 
+// //
 // // Params:
-// // 
+// //
 // // - `data`: string to be converted into a number
-// // 
+// //
 // // Returns:
-// // 
+// //
 // // - Number in hexadecimal base
 // //
 // func NumberFromString(data string) *big.Int {
@@ -68,14 +68,14 @@ import (
 // 	return ans
 // }
 
-// // 
+// //
 // // Get a string representation of a number
-// // 
-// // Params: 
+// //
+// // Params:
 // // - `number`: number to be converted into a string
-// // 
+// //
 // // Returns:
-// // 
+// //
 // // - Hexadecimal string
 // //
 // func StringFromNumber(number *big.Int) string {
@@ -83,13 +83,13 @@ import (
 // }
 
 func IntFromHex(hexadecimal string) *big.Int {
-	bigInt,_ := new(big.Int).SetString(hexadecimal, 16)
+	bigInt, _ := new(big.Int).SetString(hexadecimal, 16)
 	return bigInt
 }
 
 func HexFromInt(bigInt *big.Int) string {
 	hexadecimal := fmt.Sprintf("%x", bigInt)
-	if len(hexadecimal) % 2 == 1 {
+	if len(hexadecimal)%2 == 1 {
 		hexadecimal = "0" + hexadecimal
 	}
 	return hexadecimal
@@ -97,17 +97,17 @@ func HexFromInt(bigInt *big.Int) string {
 
 func BitsFromHex(hexadecimal string) string {
 	bits, _ := strconv.ParseUint(hexadecimal, 16, 32)
-	stringTemplate := fmt.Sprint("%0", len(hexadecimal) * 4, "b")
-    return fmt.Sprintf(stringTemplate, bits)
+	stringTemplate := fmt.Sprint("%0", len(hexadecimal)*4, "b")
+	return fmt.Sprintf(stringTemplate, bits)
 }
 
 func ByteStringFromBase64(base64 string) []byte {
-	return []byte(b64.StdEncoding.EncodeToString([]byte(base64)))
+	bytes, _ := b64.StdEncoding.DecodeString((base64))
+	return bytes
 }
 
 func Base64FromByteString(byteString []byte) string {
-	data, _ := b64.StdEncoding.DecodeString(string(byteString))
-    return fmt.Sprintf("%q", data)
+	return b64.StdEncoding.EncodeToString(byteString)
 }
 
 func HexFromByteString(byteString []byte) string {

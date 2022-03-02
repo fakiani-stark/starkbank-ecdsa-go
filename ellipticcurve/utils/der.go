@@ -8,20 +8,20 @@ import (
 )
 
 const (
-	Integer string			= "integer"
-    BitString 				= "bitString"
-    OctetString 			= "octetString"
-    Null 					= "null"
-    Object 					= "object"
-    PrintableString 		= "printableString"
-    UtcTime 				= "utcTime"
-    Sequence 				= "sequence"
-    Set 					= "set"
-    OidContainer 			= "oidContainer"
-    PublicKeyPointContainer = "publicKeyPointContainer"
+	Integer                 string = "integer"
+	BitString                      = "bitString"
+	OctetString                    = "octetString"
+	Null                           = "null"
+	Object                         = "object"
+	PrintableString                = "printableString"
+	UtcTime                        = "utcTime"
+	Sequence                       = "sequence"
+	Set                            = "set"
+	OidContainer                   = "oidContainer"
+	PublicKeyPointContainer        = "publicKeyPointContainer"
 )
 
-var hexTagtoType = map[string]string {
+var hexTagtoType = map[string]string{
 	"02": Integer,
 	"03": BitString,
 	"04": OctetString,
@@ -48,7 +48,7 @@ func EncodePrimitive(tagType string, value interface{}) string {
 		value = EncodeInteger(value.(*big.Int))
 	}
 	if tagType == Object {
-		value = OidToHex(value.([]int))
+		value = OidToHex(value.([]int64))
 	}
 	return fmt.Sprintf("%s%s%s", typeToHexTag[tagType], GenerateLengthBytes(value.(string)), value)
 }
@@ -60,23 +60,23 @@ func Parse(hexadecimal string) []interface{} {
 	typeByte := hexadecimal[:2]
 	hexadecimal = hexadecimal[2:]
 	length, lengthBytes := ReadLengthBytes(hexadecimal)
-	content := hexadecimal[lengthBytes: lengthBytes + length]
-	hexadecimal = hexadecimal[lengthBytes + length:]
+	content := hexadecimal[lengthBytes : lengthBytes+length]
+	hexadecimal = hexadecimal[lengthBytes+length:]
 	if len(content) < length {
 		panic("missing bytes in DER parse")
 	}
-	
-	tagData := GetTagData(typeByte)
 
+	tagData := GetTagData(typeByte)
 	contentArray := make([]interface{}, len(content))
 	for i, value := range content {
 		contentArray[i] = value
 	}
+
 	if tagData["isConstructed"].(bool) {
 		nextContent := Parse(hexadecimal)
 		if len(nextContent) == 0 {
 			return []interface{}{Parse(content)}
-		}	
+		}
 		return append([]interface{}{Parse(content)}, Parse(hexadecimal)[0])
 	}
 
@@ -108,7 +108,7 @@ func ParseOid(hexadecimal string) []int {
 func ParseTime(hexadecimal string) time.Time {
 	parsedHex := ParseString(hexadecimal)
 	layout := "060102150405"
-	parsedTime,_ := time.Parse(layout, parsedHex)
+	parsedTime, _ := time.Parse(layout, parsedHex)
 	return parsedTime
 }
 
@@ -172,14 +172,14 @@ func GenerateLengthBytes(hexadecimal string) string {
 	if size < 128 {
 		return fmt.Sprintf("%02s", length)
 	}
-	lengthLength := 128 + len(length) / 2
+	lengthLength := 128 + len(length)/2
 	return HexFromInt(big.NewInt(int64(lengthLength))) + length
 }
 
 func GetTagData(tag string) map[string]interface{} {
 	bits := BitsFromHex(tag)[:3]
 	bit8, bit7, bit6 := string(bits[0]), string(bits[1]), string(bits[2])
-	
+
 	var tagClass string
 	switch bit8 {
 	case "0":
@@ -202,9 +202,9 @@ func GetTagData(tag string) map[string]interface{} {
 		tagType = "None"
 	}
 
-	return map[string]interface{} {
-		"class": tagClass,
+	return map[string]interface{}{
+		"class":         tagClass,
 		"isConstructed": isConstructed,
-		"type": tagType,
+		"type":          tagType,
 	}
 }

@@ -1,15 +1,15 @@
 package utils
 
 import (
-	"math/big"
 	"fmt"
+	"math/big"
 )
 
 // type OID interface {
 // 	OidFromHex(hexadecimal string) []int
 // }
 
-type Oid struct {}
+type Oid struct{}
 
 func OidFromHex(hexadecimal string) []int {
 	firstByte, remainingBytes := hexadecimal[:2], hexadecimal[2:]
@@ -24,23 +24,23 @@ func OidFromHex(hexadecimal string) []int {
 			oidInt = byteInt - 128
 			continue
 		}
-		oidInt = oidInt * 128 + byteInt
+		oidInt = oidInt*128 + byteInt
 		oid = append(oid, oidInt)
 		oidInt = int(0)
 	}
 	return oid
 }
 
-func OidToHex(oid []int) string {
-	hexadecimal := HexFromInt(big.NewInt(int64(40 * oid[0] + oid[1])))
+func OidToHex(oid []int64) string {
+	hexadecimal := HexFromInt(big.NewInt(40*oid[0] + oid[1]))
 	var byteArray []int
-	for _, oidInt :=  range oid[2:] {
-		endDelta := int(0)
+	for _, oidInt := range oid[2:] {
+		endDelta := int64(0)
 		for {
-			byteInt := oidInt % 128 + endDelta
+			byteInt := oidInt%128 + endDelta
 			oidInt = oidInt / 128
 			endDelta = 128
-			byteArray = append(byteArray, byteInt)
+			byteArray = append(byteArray, int(byteInt))
 			if oidInt == 0 {
 				break
 			}
@@ -52,4 +52,3 @@ func OidToHex(oid []int) string {
 	}
 	return hexadecimal
 }
-

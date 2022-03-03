@@ -11,10 +11,11 @@ type PrivateKey struct {
 	Secret *big.Int
 }
 
-func NewPrivateKey(curve CurveFp, secret *big.Int) *PrivateKey {
-	privateKey := new(PrivateKey)
-	privateKey.Curve = curve
-	privateKey.Secret = secret
+func NewPrivateKey(curve CurveFp, secret *big.Int) PrivateKey {
+	privateKey := PrivateKey{
+		Curve:  curve,
+		Secret: secret,
+	}
 	randomSecret, err := rand.Int(rand.Reader, curve.N)
 	if err != nil {
 		return privateKey
@@ -25,7 +26,7 @@ func NewPrivateKey(curve CurveFp, secret *big.Int) *PrivateKey {
 	return privateKey
 }
 
-func (obj PrivateKey) PublicKey() *PublicKey {
+func (obj PrivateKey) PublicKey() PublicKey {
 	pointG := *new(Point)
 	pointG.X = obj.Curve.Gx
 	pointG.Y = obj.Curve.Gy
@@ -36,7 +37,10 @@ func (obj PrivateKey) PublicKey() *PublicKey {
 		obj.Curve.A,
 		obj.Curve.P,
 	)
-	return NewPublicKey(calculatedPoint, obj.Curve)
+	return PublicKey{
+		Point: calculatedPoint,
+		Curve: obj.Curve,
+	}
 }
 
 func (obj PrivateKey) ToString() string {
@@ -61,12 +65,12 @@ func (obj PrivateKey) ToPem() string {
 	return utils.CreatePem(utils.Base64FromByteString(der), privateKeyTemplate)
 }
 
-func (obj PrivateKey) FromPem(pem string) *PrivateKey {
+func (obj PrivateKey) FromPem(pem string) PrivateKey {
 	privateKeyPem := utils.GetPemContent(pem, privateKeyTemplate)
 	return obj.FromDer(utils.ByteStringFromBase64(privateKeyPem))
 }
 
-func (obj PrivateKey) FromDer(data []byte) *PrivateKey {
+func (obj PrivateKey) FromDer(data []byte) PrivateKey {
 	hexadecimal := utils.HexFromByteString(data)
 	parsed := utils.Parse(hexadecimal)[0]
 	privateKeyFlag := parsed.([]interface{})[0].(*big.Int)
@@ -87,7 +91,7 @@ func (obj PrivateKey) FromDer(data []byte) *PrivateKey {
 	return obj.FromString(secretHex, curve)
 }
 
-func (obj PrivateKey) FromString(str string, curve CurveFp) *PrivateKey {
+func (obj PrivateKey) FromString(str string, curve CurveFp) PrivateKey {
 	return NewPrivateKey(curve, utils.IntFromHex(str))
 }
 

@@ -51,22 +51,11 @@ import (
 // 	return ans
 // }
 
-// //
-// // Get a number representation of a string
-// //
-// // Params:
-// //
-// // - `data`: string to be converted into a number
-// //
-// // Returns:
-// //
-// // - Number in hexadecimal base
-// //
-// func NumberFromString(data string) *big.Int {
+func NumberFromByteString(data []byte) *big.Int {
 
-// 	ans,_ := new(big.Int).SetString(hex.EncodeToString([]byte(data)), 16)
-// 	return ans
-// }
+	ans, _ := new(big.Int).SetString(hex.EncodeToString(data), 16)
+	return ans
+}
 
 // //
 // // Get a string representation of a number

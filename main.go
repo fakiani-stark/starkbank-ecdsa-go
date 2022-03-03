@@ -7,12 +7,16 @@ import (
 )
 
 func main() {
-	var curve ellipticcurve.CurveFp = ellipticcurve.Secp256k1()
-	var privKey ellipticcurve.PrivateKey = *ellipticcurve.NewPrivateKey(curve, big.NewInt(2))
-	var pubKey ellipticcurve.PublicKey = *privKey.PublicKey()
+	// Create private and public key (With constant secret for testing purposes)
+	privateKey := ellipticcurve.NewPrivateKey(ellipticcurve.Secp256k1(), big.NewInt(2))
+	publicKey := privateKey.PublicKey()
 
-	fmt.Println("", privKey.ToPem())
-	fmt.Println("", privKey.FromPem("-----BEGIN EC PRIVATE KEY-----MFUCAQEEAQKgBwYFK4EEAAqhRANCAATGBH+UQe19bTBFQG6VwHzYXHeOS4zvPKerrAm5XHCe5RrhaP6mPcM5o8WEGUZs6u739jJlMmbQ4SNkMalQz+Uq-----END EC PRIVATE KEY-----").ToPem())
-	fmt.Println("", pubKey.ToPem())
-	fmt.Println("", pubKey.FromPem("-----BEGIN PUBLIC KEY-----MFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAExgR/lEHtfW0wRUBulcB82Fx3jkuM7zynq6wJuVxwnuUa4Wj+pj3DOaPFhBlGbOru9/YyZTJm0OEjZDGpUM/lKg==-----END PUBLIC KEY-----").ToPem())
+	fmt.Printf("\n\nPrivate Key PEM: " + privateKey.ToPem())
+	fmt.Printf("\n\nPublic Key PEM: " + publicKey.ToPem())
+
+	// Sign test message using private key
+	signer := ellipticcurve.Ecdsa{}.Sign("Hello World!", &privateKey)
+	fmt.Printf("\n\nHello World Signature: \n" + signer.ToBase64())
+	verifer := ellipticcurve.Ecdsa{}.Verify("Hello World!", signer, &publicKey)
+	fmt.Printf("\n\nHello World Signature Verification: \n%t", verifer)
 }

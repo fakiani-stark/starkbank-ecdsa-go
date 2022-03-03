@@ -10,67 +10,67 @@ type Mather interface {
 	Inv(x *big.Int, n *big.Int) *big.Int
 }
 
-type Math struct {}
+type Math struct{}
 
-// 
+//
 // Fast way to multily point and scalar in elliptic curves
-// 
+//
 // Params:
-// 
+//
 // - `p`: First Point to mutiply
-// 
+//
 // - `n`: Scalar to mutiply
-// 
+//
 // - `N`: Order of the elliptic curve
-// 
+//
 // - `A`: Coefficient of the first-order term of the equation Y^2 = X^3 + A*X + B (mod P)
-// 
+//
 // - `P`: Prime number in the module of the equation Y^2 = X^3 + A*X + B (mod P)
-// 
+//
 // Returns:
-// 
+//
 // - Point that represents the multiplication of a point and a scalar
-// 
+//
 func Multiply(p Point, n *big.Int, N *big.Int, A *big.Int, P *big.Int) Point {
 	return fromJacobian(jacobianMultiply(toJacobian(p), n, N, A, P), P)
 }
 
-// 
+//
 // Fast way to add two points in elliptic curves
-// 
+//
 // Params:
-// 
+//
 // - `p`: First Point you want to add
-// 
+//
 // - `q`: Second Point you want to add
-// 
+//
 // - `A`: Coefficient of the first-order term of the equation Y^2 = X^3 + A*X + B (mod P)
-// 
+//
 // - `P`: Prime number in the module of the equation Y^2 = X^3 + A*X + B (mod P)
-// 
+//
 // Returns:
-// 
+//
 // - Point that represents the sum of First and Second Point
-// 
+//
 func Add(p Point, q Point, A *big.Int, P *big.Int) Point {
 	return fromJacobian(jacobianAdd(toJacobian(p), toJacobian(q), A, P), P)
 }
 
-// 
+//
 // Extended Euclidean Algorithm. It's the 'division' in elliptic curves
-// 
+//
 // Params:
-// 
+//
 // - `x`: Divisor
-// 
+//
 // - `n`: Mod for division
-// 
+//
 // Returns:
-// 
+//
 // - Value representing the division
-// 
+//
 func Inv(x *big.Int, n *big.Int) *big.Int {
-	if x.Cmp(big.NewInt(0))== 0 {
+	if x.Cmp(big.NewInt(0)) == 0 {
 		return big.NewInt(0)
 	}
 	lm := big.NewInt(1)
@@ -90,32 +90,32 @@ func Inv(x *big.Int, n *big.Int) *big.Int {
 	return new(big.Int).Mod(lm, n)
 }
 
-// 
+//
 // Convert point to Jacobian coordinates
-// 
+//
 // Params:
-// 
+//
 // - `p`: the point you want to transform
-// 
+//
 // Returns:
-// 
+//
 // - Point in Jacobian coordinates
-// 
+//
 func toJacobian(p Point) Point {
 	return Point{p.X, p.Y, big.NewInt(1)}
 }
 
-// 
+//
 // Convert point to Jacobian coordinates
-// 
+//
 // Params:
-// 
+//
 // - `p`: the point you want to transform
-// 
+//
 // - `P`: Prime number in the module of the equation Y^2 = X^3 + A*X + B (mod P)
-// 
+//
 // Returns:
-// 
+//
 // - Point in Jacobian coordinates
 //
 func fromJacobian(p Point, P *big.Int) Point {
@@ -125,19 +125,19 @@ func fromJacobian(p Point, P *big.Int) Point {
 	return Point{x, y, big.NewInt(0)}
 }
 
-// 
+//
 // Double a point in elliptic curves
-// 
+//
 // Params:
-// 
+//
 // - `p`: Point you want to double
-// 
+//
 // - `A`: Coefficient of the first-order term of the equation Y^2 = X^3 + A*X + B (mod P)
-// 
+//
 // - `P`: Prime number in the module of the equation Y^2 = X^3 + A*X + B (mod P)
-// 
+//
 // Returns:
-// 
+//
 // - Point that represents the sum of First and Second Point
 //
 func jacobianDouble(p Point, A *big.Int, P *big.Int) Point {
@@ -154,21 +154,21 @@ func jacobianDouble(p Point, A *big.Int, P *big.Int) Point {
 	return Point{nx, ny, nz}
 }
 
-// 
+//
 // Add two points in elliptic curves
-// 
+//
 // Params:
-// 
+//
 // - `p`: First Point you want to add
-// 
+//
 // - `q`: Second Point you want to add
-// 
+//
 // - `A`: Coefficient of the first-order term of the equation Y^2 = X^3 + A*X + B (mod P)
-// 
+//
 // - `P`: Prime number in the module of the equation Y^2 = X^3 + A*X + B (mod P)
-// 
+//
 // Returns:
-// 
+//
 // - Point that represents the sum of First and Second Point
 //
 func jacobianAdd(p Point, q Point, A *big.Int, P *big.Int) Point {
@@ -202,23 +202,23 @@ func jacobianAdd(p Point, q Point, A *big.Int, P *big.Int) Point {
 	return Point{nx, ny, nz}
 }
 
-// 
+//
 // Multily point and scalar in elliptic curves
-// 
+//
 // Params:
-// 
+//
 // - `p`: First Point to mutiply
-// 
+//
 // - `n`: Scalar to mutiply
-// 
+//
 // - `N`: Order of the elliptic curve
-// 
+//
 // - `A`: Coefficient of the first-order term of the equation Y^2 = X^3 + A*X + B (mod P)
-// 
+//
 // - `P`: Prime number in the module of the equation Y^2 = X^3 + A*X + B (mod P)
-// 
+//
 // Returns:
-// 
+//
 // - Point that represents the sum of First and Second Point
 //
 func jacobianMultiply(p Point, n *big.Int, N *big.Int, A *big.Int, P *big.Int) Point {
@@ -240,7 +240,7 @@ func jacobianMultiply(p Point, n *big.Int, N *big.Int, A *big.Int, P *big.Int) P
 				A,
 				P),
 			A,
-			P,		
+			P,
 		)
 	}
 
@@ -253,7 +253,7 @@ func jacobianMultiply(p Point, n *big.Int, N *big.Int, A *big.Int, P *big.Int) P
 				A,
 				P),
 			A,
-			P,		
+			P,
 		),
 		p,
 		A,

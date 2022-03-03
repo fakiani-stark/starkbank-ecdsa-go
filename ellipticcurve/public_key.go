@@ -1,7 +1,6 @@
 package ellipticcurve
 
 import (
-	// "math/big"
 	"fmt"
 	"math/big"
 	"starkbank/ecdsa-go/ellipticcurve/utils"
@@ -10,13 +9,6 @@ import (
 type PublicKey struct {
 	Point Point
 	Curve CurveFp
-}
-
-func NewPublicKey(point Point, curve CurveFp) *PublicKey {
-	publicKey := new(PublicKey)
-	publicKey.Curve = curve
-	publicKey.Point = point
-	return publicKey
 }
 
 func (obj PublicKey) ToString(encoded bool) string {
@@ -47,12 +39,12 @@ func (obj PublicKey) ToPem() string {
 	return utils.CreatePem(utils.Base64FromByteString(der), publicKeyTemplate)
 }
 
-func (obj PublicKey) FromPem(pem string) *PublicKey {
+func (obj PublicKey) FromPem(pem string) PublicKey {
 	publicKeyPem := utils.GetPemContent(pem, publicKeyTemplate)
 	return obj.FromDer(utils.ByteStringFromBase64(publicKeyPem))
 }
 
-func (obj PublicKey) FromDer(data []byte) *PublicKey {
+func (obj PublicKey) FromDer(data []byte) PublicKey {
 	hexadecimal := utils.HexFromByteString(data)
 	parsed := utils.Parse(hexadecimal)[0]
 	curveData := parsed.([]interface{})[0]
@@ -67,8 +59,7 @@ func (obj PublicKey) FromDer(data []byte) *PublicKey {
 	return obj.FromString(pointString, curve, true)
 }
 
-func (obj PublicKey) FromString(str string, curve CurveFp,
-	validatePoint bool) *PublicKey {
+func (obj PublicKey) FromString(str string, curve CurveFp, validatePoint bool) PublicKey {
 	baseLength := 2 * curve.Length()
 	if len(str) > 2*baseLength && str[:4] == "0004" {
 		str = str[4:]
@@ -82,7 +73,11 @@ func (obj PublicKey) FromString(str string, curve CurveFp,
 	pointG.Y = utils.IntFromHex(ys)
 	pointG.Z = big.NewInt(0)
 
-	publicKey := NewPublicKey(pointG, curve)
+	publicKey := PublicKey{
+		Point: pointG,
+		Curve: curve,
+	}
+
 	if !validatePoint {
 		return publicKey
 	}

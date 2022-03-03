@@ -179,10 +179,10 @@ func jacobianAdd(p Point, q Point, A *big.Int, P *big.Int) Point {
 		return p
 	}
 
-	U1 := new(big.Int).Mod(new(big.Int).Exp(new(big.Int).Mul(p.X, q.Z), big.NewInt(2), nil), P)
-	U2 := new(big.Int).Mod(new(big.Int).Exp(new(big.Int).Mul(q.X, p.Z), big.NewInt(2), nil), P)
-	S1 := new(big.Int).Mod(new(big.Int).Exp(new(big.Int).Mul(p.Y, q.Z), big.NewInt(3), nil), P)
-	S2 := new(big.Int).Mod(new(big.Int).Exp(new(big.Int).Mul(q.Y, p.Z), big.NewInt(3), nil), P)
+	U1 := new(big.Int).Mod(new(big.Int).Mul(p.X, new(big.Int).Exp(q.Z, big.NewInt(2), nil)), P)
+	U2 := new(big.Int).Mod(new(big.Int).Mul(q.X, new(big.Int).Exp(p.Z, big.NewInt(2), nil)), P)
+	S1 := new(big.Int).Mod(new(big.Int).Mul(p.Y, new(big.Int).Exp(q.Z, big.NewInt(3), nil)), P)
+	S2 := new(big.Int).Mod(new(big.Int).Mul(q.Y, new(big.Int).Exp(p.Z, big.NewInt(3), nil)), P)
 
 	if U1.Cmp(U2) == 0 {
 		if S1.Cmp(S2) != 0 {
@@ -225,13 +225,14 @@ func jacobianMultiply(p Point, n *big.Int, N *big.Int, A *big.Int, P *big.Int) P
 	if p.Y.Cmp(big.NewInt(0)) == 0 || n.Cmp(big.NewInt(0)) == 0 {
 		return Point{big.NewInt(0), big.NewInt(0), big.NewInt(1)}
 	}
+
 	if n.Cmp(big.NewInt(1)) == 0 {
 		return p
 	}
 	if n.Cmp(big.NewInt(0)) < 0 || n.Cmp(N) >= 0 {
-		return jacobianMultiply(p, new(big.Int).Mod(n, N), N, A, P)
+		return jacobianMultiply(p, big.NewInt(0).Mod(n, N), N, A, P)
 	}
-	if new(big.Int).Mod(n, big.NewInt(2)).Cmp(big.NewInt(0)) == 0 {
+	if big.NewInt(0).Mod(n, big.NewInt(2)).Cmp(big.NewInt(0)) == 0 {
 		return jacobianDouble(
 			jacobianMultiply(
 				p,

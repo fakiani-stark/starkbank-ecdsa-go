@@ -15,17 +15,23 @@ type PrivateKey struct {
 	Secret *big.Int
 }
 
-func NewPrivateKey(curve curve.CurveFp, secret *big.Int) PrivateKey {
-	privateKey := PrivateKey{
-		Curve:  curve,
-		Secret: secret,
-	}
-	randomSecret, err := rand.Int(rand.Reader, curve.N)
-	if err != nil {
+func New(curve curve.CurveFp, secret ...*big.Int) PrivateKey {
+	if len(secret) > 0 {
+		privateKey := PrivateKey{
+			Curve:  curve,
+			Secret: secret[0],
+		}
 		return privateKey
 	}
-	if len(secret.Bits()) == 0 {
-		privateKey.Secret = randomSecret
+
+	randomSecret, err := rand.Int(rand.Reader, curve.N)
+	if err != nil {
+		panic("Failed to generate random secret")
+	}
+
+	privateKey := PrivateKey{
+		Curve:  curve,
+		Secret: randomSecret,
 	}
 	return privateKey
 }
@@ -96,7 +102,7 @@ func FromDer(data []byte) PrivateKey {
 }
 
 func FromString(str string, curve curve.CurveFp) PrivateKey {
-	return NewPrivateKey(curve, utils.IntFromHex(str))
+	return New(curve, utils.IntFromHex(str))
 }
 
 const privateKeyTemplate = `

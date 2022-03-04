@@ -93,7 +93,7 @@ import (
 
 func main() {
   // Generate new Keys
-	privateKey := privatekey.NewPrivateKey(curve.Secp256k1(), big.NewInt(0))
+	privateKey := privatekey.New(curve.Secp256k1())
 	publicKey := privateKey.PublicKey()
 
 	message := "My test message"

@@ -1,14 +1,17 @@
-package ellipticcurve
+package publickey
 
 import (
 	"fmt"
 	"math/big"
+	"starkbank/ecdsa-go/ellipticcurve/curve"
+	"starkbank/ecdsa-go/ellipticcurve/math"
+	"starkbank/ecdsa-go/ellipticcurve/point"
 	"starkbank/ecdsa-go/ellipticcurve/utils"
 )
 
 type PublicKey struct {
-	Point Point
-	Curve CurveFp
+	Point point.Point
+	Curve curve.CurveFp
 }
 
 func (obj PublicKey) ToString(encoded bool) string {
@@ -39,12 +42,12 @@ func (obj PublicKey) ToPem() string {
 	return utils.CreatePem(utils.Base64FromByteString(der), publicKeyTemplate)
 }
 
-func (obj PublicKey) FromPem(pem string) PublicKey {
+func FromPem(pem string) PublicKey {
 	publicKeyPem := utils.GetPemContent(pem, publicKeyTemplate)
-	return obj.FromDer(utils.ByteStringFromBase64(publicKeyPem))
+	return FromDer(utils.ByteStringFromBase64(publicKeyPem))
 }
 
-func (obj PublicKey) FromDer(data []byte) PublicKey {
+func FromDer(data []byte) PublicKey {
 	hexadecimal := utils.HexFromByteString(data)
 	parsed := utils.Parse(hexadecimal)[0]
 	curveData := parsed.([]interface{})[0]
@@ -55,11 +58,11 @@ func (obj PublicKey) FromDer(data []byte) PublicKey {
 	if len(publicKeyOid) != len(_ecdsaPublicKeyOid) {
 		panic("Invalid Public Key Oid")
 	}
-	curve := CurveByOid(curveOid)
-	return obj.FromString(pointString, curve, true)
+	curve := curve.CurveByOid(curveOid)
+	return FromString(pointString, curve, true)
 }
 
-func (obj PublicKey) FromString(str string, curve CurveFp, validatePoint bool) PublicKey {
+func FromString(str string, curve curve.CurveFp, validatePoint bool) PublicKey {
 	baseLength := 2 * curve.Length()
 	if len(str) > 2*baseLength && str[:4] == "0004" {
 		str = str[4:]
@@ -68,7 +71,7 @@ func (obj PublicKey) FromString(str string, curve CurveFp, validatePoint bool) P
 	xs := str[:baseLength]
 	ys := str[baseLength:]
 
-	pointG := *new(Point)
+	pointG := *new(point.Point)
 	pointG.X = utils.IntFromHex(xs)
 	pointG.Y = utils.IntFromHex(ys)
 	pointG.Z = big.NewInt(0)
@@ -81,13 +84,13 @@ func (obj PublicKey) FromString(str string, curve CurveFp, validatePoint bool) P
 	if !validatePoint {
 		return publicKey
 	}
-	if pointG.isAtInfinity() {
+	if pointG.IsAtInfinity() {
 		panic("Public Key point is at infinity")
 	}
 	if !curve.Contains(pointG) {
 		panic("Points is not valid in the curve")
 	}
-	if !Multiply(pointG, curve.N, curve.N, curve.A, curve.P).isAtInfinity() {
+	if !math.Multiply(pointG, curve.N, curve.N, curve.A, curve.P).IsAtInfinity() {
 		panic("Point is not at infinity")
 	}
 	return publicKey

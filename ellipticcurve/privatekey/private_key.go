@@ -1,17 +1,21 @@
-package ellipticcurve
+package privatekey
 
 import (
 	"crypto/rand"
 	"math/big"
+	"starkbank/ecdsa-go/ellipticcurve/curve"
+	"starkbank/ecdsa-go/ellipticcurve/math"
+	"starkbank/ecdsa-go/ellipticcurve/point"
+	"starkbank/ecdsa-go/ellipticcurve/publickey"
 	"starkbank/ecdsa-go/ellipticcurve/utils"
 )
 
 type PrivateKey struct {
-	Curve  CurveFp
+	Curve  curve.CurveFp
 	Secret *big.Int
 }
 
-func NewPrivateKey(curve CurveFp, secret *big.Int) PrivateKey {
+func NewPrivateKey(curve curve.CurveFp, secret *big.Int) PrivateKey {
 	privateKey := PrivateKey{
 		Curve:  curve,
 		Secret: secret,
@@ -26,18 +30,18 @@ func NewPrivateKey(curve CurveFp, secret *big.Int) PrivateKey {
 	return privateKey
 }
 
-func (obj PrivateKey) PublicKey() PublicKey {
-	pointG := *new(Point)
+func (obj PrivateKey) PublicKey() publickey.PublicKey {
+	pointG := *new(point.Point)
 	pointG.X = obj.Curve.Gx
 	pointG.Y = obj.Curve.Gy
-	calculatedPoint := Multiply(
+	calculatedPoint := math.Multiply(
 		pointG,
 		obj.Secret,
 		obj.Curve.N,
 		obj.Curve.A,
 		obj.Curve.P,
 	)
-	return PublicKey{
+	return publickey.PublicKey{
 		Point: calculatedPoint,
 		Curve: obj.Curve,
 	}
@@ -65,20 +69,20 @@ func (obj PrivateKey) ToPem() string {
 	return utils.CreatePem(utils.Base64FromByteString(der), privateKeyTemplate)
 }
 
-func (obj PrivateKey) FromPem(pem string) PrivateKey {
+func FromPem(pem string) PrivateKey {
 	privateKeyPem := utils.GetPemContent(pem, privateKeyTemplate)
-	return obj.FromDer(utils.ByteStringFromBase64(privateKeyPem))
+	return FromDer(utils.ByteStringFromBase64(privateKeyPem))
 }
 
-func (obj PrivateKey) FromDer(data []byte) PrivateKey {
+func FromDer(data []byte) PrivateKey {
 	hexadecimal := utils.HexFromByteString(data)
 	parsed := utils.Parse(hexadecimal)[0]
 	privateKeyFlag := parsed.([]interface{})[0].(*big.Int)
 	secretHex := parsed.([]interface{})[1].(string)
 	curveOid := parsed.([]interface{})[2].([]interface{})[0].([]int)
 	publicKeyString := parsed.([]interface{})[3].([]interface{})[0].(string)
-	curve := CurveByOid(curveOid)
-	privateKey := obj.FromString(secretHex, curve)
+	curve := curve.CurveByOid(curveOid)
+	privateKey := FromString(secretHex, curve)
 
 	if privateKeyFlag.Cmp(big.NewInt(1)) != 0 {
 		panic("Private keys should start with a '1' flag")
@@ -88,10 +92,10 @@ func (obj PrivateKey) FromDer(data []byte) PrivateKey {
 		panic("Private keys should start with a '1' flag")
 	}
 
-	return obj.FromString(secretHex, curve)
+	return FromString(secretHex, curve)
 }
 
-func (obj PrivateKey) FromString(str string, curve CurveFp) PrivateKey {
+func FromString(str string, curve curve.CurveFp) PrivateKey {
 	return NewPrivateKey(curve, utils.IntFromHex(str))
 }
 

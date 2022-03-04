@@ -1,12 +1,13 @@
-package ellipticcurve
+package math
 
 import (
 	"math/big"
+	"starkbank/ecdsa-go/ellipticcurve/point"
 )
 
 type Mather interface {
-	Multiply(p Point, n *big.Int, N *big.Int, A *big.Int, P *big.Int) Point
-	Add(p Point, q Point, A *big.Int, P *big.Int) Point
+	Multiply(p point.Point, n *big.Int, N *big.Int, A *big.Int, P *big.Int) point.Point
+	Add(p point.Point, q point.Point, A *big.Int, P *big.Int) point.Point
 	Inv(x *big.Int, n *big.Int) *big.Int
 }
 
@@ -31,7 +32,7 @@ type Math struct{}
 //
 // - Point that represents the multiplication of a point and a scalar
 //
-func Multiply(p Point, n *big.Int, N *big.Int, A *big.Int, P *big.Int) Point {
+func Multiply(p point.Point, n *big.Int, N *big.Int, A *big.Int, P *big.Int) point.Point {
 	return fromJacobian(jacobianMultiply(toJacobian(p), n, N, A, P), P)
 }
 
@@ -52,7 +53,7 @@ func Multiply(p Point, n *big.Int, N *big.Int, A *big.Int, P *big.Int) Point {
 //
 // - Point that represents the sum of First and Second Point
 //
-func Add(p Point, q Point, A *big.Int, P *big.Int) Point {
+func Add(p point.Point, q point.Point, A *big.Int, P *big.Int) point.Point {
 	return fromJacobian(jacobianAdd(toJacobian(p), toJacobian(q), A, P), P)
 }
 
@@ -101,8 +102,8 @@ func Inv(x *big.Int, n *big.Int) *big.Int {
 //
 // - Point in Jacobian coordinates
 //
-func toJacobian(p Point) Point {
-	return Point{p.X, p.Y, big.NewInt(1)}
+func toJacobian(p point.Point) point.Point {
+	return point.Point{p.X, p.Y, big.NewInt(1)}
 }
 
 //
@@ -118,11 +119,11 @@ func toJacobian(p Point) Point {
 //
 // - Point in Jacobian coordinates
 //
-func fromJacobian(p Point, P *big.Int) Point {
+func fromJacobian(p point.Point, P *big.Int) point.Point {
 	z := Inv(p.Z, P)
 	x := new(big.Int).Mod(new(big.Int).Mul(p.X, new(big.Int).Exp(z, big.NewInt(2), nil)), P)
 	y := new(big.Int).Mod(new(big.Int).Mul(p.Y, new(big.Int).Exp(z, big.NewInt(3), nil)), P)
-	return Point{x, y, big.NewInt(0)}
+	return point.Point{x, y, big.NewInt(0)}
 }
 
 //
@@ -140,9 +141,9 @@ func fromJacobian(p Point, P *big.Int) Point {
 //
 // - Point that represents the sum of First and Second Point
 //
-func jacobianDouble(p Point, A *big.Int, P *big.Int) Point {
+func jacobianDouble(p point.Point, A *big.Int, P *big.Int) point.Point {
 	if p.Y == nil || p.Y.Cmp(big.NewInt(0)) == 0 {
-		return Point{big.NewInt(0), big.NewInt(0), big.NewInt(0)}
+		return point.Point{big.NewInt(0), big.NewInt(0), big.NewInt(0)}
 	}
 
 	ysq := new(big.Int).Mod(new(big.Int).Exp(p.Y, big.NewInt(2), nil), P)
@@ -151,7 +152,7 @@ func jacobianDouble(p Point, A *big.Int, P *big.Int) Point {
 	nx := new(big.Int).Mod(new(big.Int).Sub(new(big.Int).Exp(M, big.NewInt(2), nil), new(big.Int).Mul(big.NewInt(2), S)), P)
 	ny := new(big.Int).Mod(new(big.Int).Sub(new(big.Int).Mul(M, new(big.Int).Sub(S, nx)), new(big.Int).Mul(big.NewInt(8), new(big.Int).Exp(ysq, big.NewInt(2), nil))), P)
 	nz := new(big.Int).Mod(new(big.Int).Mul(big.NewInt(2), new(big.Int).Mul(p.Y, p.Z)), P)
-	return Point{nx, ny, nz}
+	return point.Point{nx, ny, nz}
 }
 
 //
@@ -171,7 +172,7 @@ func jacobianDouble(p Point, A *big.Int, P *big.Int) Point {
 //
 // - Point that represents the sum of First and Second Point
 //
-func jacobianAdd(p Point, q Point, A *big.Int, P *big.Int) Point {
+func jacobianAdd(p point.Point, q point.Point, A *big.Int, P *big.Int) point.Point {
 	if p.Y == nil {
 		return q
 	}
@@ -186,7 +187,7 @@ func jacobianAdd(p Point, q Point, A *big.Int, P *big.Int) Point {
 
 	if U1.Cmp(U2) == 0 {
 		if S1.Cmp(S2) != 0 {
-			return Point{big.NewInt(0), big.NewInt(0), big.NewInt(1)}
+			return point.Point{big.NewInt(0), big.NewInt(0), big.NewInt(1)}
 		}
 		return jacobianDouble(p, A, P)
 	}
@@ -199,7 +200,7 @@ func jacobianAdd(p Point, q Point, A *big.Int, P *big.Int) Point {
 	nx := new(big.Int).Mod(new(big.Int).Sub(new(big.Int).Exp(R, big.NewInt(2), nil), new(big.Int).Add(H3, new(big.Int).Mul(big.NewInt(2), U1H2))), P)
 	ny := new(big.Int).Mod(new(big.Int).Sub(new(big.Int).Mul(R, new(big.Int).Sub(U1H2, nx)), new(big.Int).Mul(S1, H3)), P)
 	nz := new(big.Int).Mod(new(big.Int).Mul(H, new(big.Int).Mul(p.Z, q.Z)), P)
-	return Point{nx, ny, nz}
+	return point.Point{nx, ny, nz}
 }
 
 //
@@ -221,9 +222,9 @@ func jacobianAdd(p Point, q Point, A *big.Int, P *big.Int) Point {
 //
 // - Point that represents the sum of First and Second Point
 //
-func jacobianMultiply(p Point, n *big.Int, N *big.Int, A *big.Int, P *big.Int) Point {
+func jacobianMultiply(p point.Point, n *big.Int, N *big.Int, A *big.Int, P *big.Int) point.Point {
 	if p.Y.Cmp(big.NewInt(0)) == 0 || n.Cmp(big.NewInt(0)) == 0 {
-		return Point{big.NewInt(0), big.NewInt(0), big.NewInt(1)}
+		return point.Point{big.NewInt(0), big.NewInt(0), big.NewInt(1)}
 	}
 
 	if n.Cmp(big.NewInt(1)) == 0 {

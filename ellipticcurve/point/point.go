@@ -1,4 +1,4 @@
-package ellipticcurve
+package point
 
 import (
 	"math/big"
@@ -10,6 +10,6 @@ type Point struct {
 	Z *big.Int
 }
 
-func (obj Point) isAtInfinity() bool {
+func (obj Point) IsAtInfinity() bool {
 	return obj.Y.Cmp(big.NewInt(0)) == 0
 }

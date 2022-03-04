@@ -1,4 +1,4 @@
-package ellipticcurve
+package signature
 
 import (
 	"math/big"
@@ -6,14 +6,14 @@ import (
 )
 
 type Signature struct {
-	r big.Int
-	s big.Int
+	R big.Int
+	S big.Int
 }
 
-func NewSignature(R big.Int, S big.Int) Signature {
+func NewSignature(r big.Int, s big.Int) Signature {
 	return Signature{
-		r: R,
-		s: S,
+		R: r,
+		S: s,
 	}
 }
 
@@ -28,22 +28,22 @@ func (obj Signature) ToBase64() string {
 
 func (obj Signature) ToString() string {
 	return utils.EncodeConstructed(
-		utils.EncodePrimitive(utils.Integer, &obj.r),
-		utils.EncodePrimitive(utils.Integer, &obj.s),
+		utils.EncodePrimitive(utils.Integer, &obj.R),
+		utils.EncodePrimitive(utils.Integer, &obj.S),
 	)
 }
 
-func SignatureFromBase64(str string) Signature {
+func FromBase64(str string) Signature {
 	der := utils.ByteStringFromBase64(str)
-	return SignatureFromDer(der)
+	return FromDer(der)
 }
 
-func SignatureFromDer(str []byte) Signature {
+func FromDer(str []byte) Signature {
 	hexadecimal := utils.HexFromByteString(str)
-	return SignatureFromString(hexadecimal)
+	return FromString(hexadecimal)
 }
 
-func SignatureFromString(str string) Signature {
+func FromString(str string) Signature {
 	parse := utils.Parse(str)[0]
 	r := parse.([]interface{})[0].(*big.Int)
 	s := parse.([]interface{})[1].(*big.Int)
